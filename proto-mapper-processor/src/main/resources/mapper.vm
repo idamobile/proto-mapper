@@ -1,0 +1,47 @@
+package ${packageName};
+
+import java.io.InputStream;
+import java.io.IOException;
+
+public class ${simpleClass}Mapper {
+
+#if (!${isEnum})
+    public static ${simpleClass} map(InputStream stream) throws IOException {
+        ${protoClass} protoClass =
+                ${protoClass}.parseFrom(stream);
+        return map(protoClass);
+    }
+#end
+
+    public static ${simpleClass} map(${protoClass} protoClass) {
+#if (${isEnum})
+        for (${simpleClass} res : ${simpleClass}.values()) {
+            if (res.${enumNuberField} == protoClass.getNumber()) {
+                return res;
+            }
+        }
+        throw new IllegalArgumentException("Unable to parse ${simpleClass} from: " + protoClass);
+#else
+        ${simpleClass} result = new ${simpleClass}();
+#foreach($field in $fields)
+#if (${field.isList()})
+        ${field.getType()} ${field.getName()} = new java.util.ArrayList<${field.getGenericClass()}>();
+#if (!${field.isGenericClassNeedsMapping()})
+        ${field.getName()}.addAll(protoClass.${field.getProtoClassGetter()}List);
+#else
+        for (${field.getProtoClassOfGeneric()} el : protoClass.${field.getProtoClassGetter()}List()) {
+            ${field.getName()}.add(${field.getGenericClass()}Mapper.map(el));
+        }
+        result.${field.getSetterName()}(${field.getName()});
+#end
+#elseif (${field.isMappingRequired()})
+        result.${field.getSetterName()}(${field.getType()}Mapper.map(protoClass.${field.getProtoClassGetter()}()));
+#else
+        result.${field.getSetterName()}(protoClass.${field.getProtoClassGetter()}()#if(${field.isByteArray()}).toByteArray()#end);
+#end
+#end
+        return result;
+#end
+    }
+
+}

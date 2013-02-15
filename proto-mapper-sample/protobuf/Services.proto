@@ -1,0 +1,51 @@
+option java_outer_classname = "Services";
+option java_package = "com.shaubert.protomapper.sample.protobuf";
+option optimize_for = LITE_RUNTIME;
+
+message Entry {
+    required string key = 1;
+    optional string value = 2;
+}
+
+message Map {
+    repeated Entry entries = 1;
+}
+
+message LoginRequestProtobufDTO {
+    required string login = 1;
+    required string passwordHash = 2;
+}
+
+message CourierProtobufDTO {
+    required string firstName = 1;
+    required string lastName = 2;
+    required int32 id = 3;
+}
+
+message LoginResponseProtobufDTO {
+    enum Result {
+        OK = 1;
+        WRONG_CREDENTIALS = 2;
+        BLOCKED_ACCOUNT = 3;
+    }
+    required Result loginResult = 1;
+    required CourierProtobufDTO courierInfo = 2;
+}
+
+message PrimitiveTypes {
+    required string strVal = 1;
+    required int32 intVal = 2;
+    required int64 longVal = 3;
+    required float floatVal = 4;
+    required double doubleVal = 5;
+    required bytes byteVal = 6;
+}
+
+message PrimitiveTypesLists {
+    repeated string strEntries = 1;
+    repeated int32 intEntries = 2;
+    repeated int64 longEntries = 3;
+    repeated float floatEntries = 4;
+    repeated double doubleEntries = 5;
+    repeated bytes byteEntries = 6;
+}
