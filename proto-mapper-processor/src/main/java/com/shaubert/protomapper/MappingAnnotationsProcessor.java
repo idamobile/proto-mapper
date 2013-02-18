@@ -28,16 +28,18 @@ public class MappingAnnotationsProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "searching for mappers");
-        for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
-            ClassParams mapperParams = new ClassParams((TypeElement) elem, roundEnv);
-            logMapper(mapperParams);
-            Template template = createTemplate();
-            if (template != null) {
-                createMapperClass(template, mapperParams);
+        if (!roundEnv.processingOver()) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "searching for mappers");
+            for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
+                ClassParams mapperParams = new ClassParams((TypeElement) elem, roundEnv);
+                logMapper(mapperParams);
+                Template template = createTemplate();
+                if (template != null) {
+                    createMapperClass(template, mapperParams);
+                }
             }
         }
-        return true;
+        return false;
     }
 
     private void createMapperClass(Template template, ClassParams mapperParams) {
