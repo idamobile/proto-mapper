@@ -1,4 +1,4 @@
 proto-mapper
 ============
 
-Ligthweight generation of protobuf -> bean mappings
+Ligthweight generation of protobuf <-> bean mappers

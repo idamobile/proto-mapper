@@ -15,12 +15,14 @@ public class ${simpleClass}Mapper {
 
     public static ${simpleClass} map(${protoClass} protoClass) {
 #if (${isEnum})
-        for (${simpleClass} res : ${simpleClass}.values()) {
-            if (res.${enumNuberField} == protoClass.getNumber()) {
-                return res;
+        for (${simpleClass} result :
+                ${simpleClass}.values()) {
+            if (result.${enumNuberField} == protoClass.getNumber()) {
+                return result;
             }
         }
-        throw new IllegalArgumentException("Unable to parse ${simpleClass} from: " + protoClass);
+        throw new IllegalArgumentException("Unable to parse ${simpleClass} from: "
+                + protoClass);
 #else
         ${simpleClass} result = new ${simpleClass}();
 #foreach($field in $fields)
@@ -48,6 +50,47 @@ public class ${simpleClass}Mapper {
 #end
 #end
         return result;
+#end
+    }
+
+    public static ${protoClass} map(${simpleClass} modelClass) {
+#if (${isEnum})
+        for (${protoClass} result :
+                ${protoClass}.values()) {
+            if (result.getNumber() == modelClass.${enumNuberField}) {
+                return result;
+            }
+        }
+        throw new IllegalArgumentException("Unable to convert " + modelClass
+                + " to " + ${protoClass}.class);
+#else
+        ${protoClass}.Builder result =
+                ${protoClass}.newBuilder();
+#foreach($field in $fields)
+#if (${field.getType().isList()})
+#set($generic = ${field.getType().getGenerics().get(0)})
+        for (${generic.getName()} el : modelClass.${field.getGetterName()}()) {
+#if (!${generic.isMappingRequired()})
+#if (!${generic.isByteArray()})
+            result.${field.getProtoClassSetter()}(el);
+#else
+            result.${field.getProtoClassSetter()}(com.google.protobuf.ByteString.copyFrom(el));
+#end
+#else
+            result.${field.getProtoClassSetter()}(${generic.getName()}Mapper.map(el));
+#end
+        }
+#elseif (${field.getType().isMappingRequired()})
+        result.${field.getProtoClassSetter()}(${field.getType().getName()}Mapper.map(modelClass.${field.getGetterName()}()));
+#else
+#if (!${field.getType().isByteArray()})
+        result.${field.getProtoClassSetter()}(modelClass.${field.getGetterName()}());
+#else
+        result.${field.getProtoClassSetter()}(com.google.protobuf.ByteString.copyFrom(modelClass.${field.getGetterName()}()));
+#end
+#end
+#end
+        return result.build();
 #end
     }
 

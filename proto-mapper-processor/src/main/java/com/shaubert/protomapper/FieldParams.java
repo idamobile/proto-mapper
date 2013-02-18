@@ -9,27 +9,36 @@ public class FieldParams {
     private TypeParams type;
     private String name;
     private String protoGetter;
+    private String protoSetter;
 
     public FieldParams(VariableElement element, RoundEnvironment roundEnvironment) {
         type = new TypeParams(element.asType(), roundEnvironment);
         name = element.getSimpleName().toString();
         Field field = element.getAnnotation(Field.class);
+        final String protoFieldName;
         if (field.name() == null || field.name().length() == 0) {
-            protoGetter = makeGetter(name, type.getName());
+            protoFieldName = name;
         } else {
-            protoGetter = makeGetter(field.name(), type.getName());
+            protoFieldName = field.name();
         }
+        protoGetter = makeProtoGetter(protoFieldName, type.getName());
+        String setPrefix = type.isList() ? "add" : "set";
+        protoSetter = formatGetSetName(setPrefix, protoFieldName);
+    }
+
+    private String makeProtoGetter(String fieldName, String type) {
+        String res = makeGetter(fieldName, type);
+        if (type.equals("java.util.List")) {
+            res += "List";
+        }
+        return res;
     }
 
     private String makeGetter(String fieldName, String type) {
         if (type.equals("boolean")) {
             return formatGetSetName("is", fieldName);
         } else {
-            String res = formatGetSetName("get", fieldName);
-            if (type.equals("java.util.List")) {
-                res += "List";
-            }
-            return res;
+            return formatGetSetName("get", fieldName);
         }
     }
 
@@ -45,11 +54,19 @@ public class FieldParams {
         return formatGetSetName("set", name);
     }
 
+    public String getGetterName() {
+        return makeGetter(name, type.getName());
+    }
+
     public String getName(){
         return name;
     }
 
     public String getProtoClassGetter(){
         return protoGetter;
+    }
+
+    public String getProtoClassSetter() {
+        return protoSetter;
     }
 }
