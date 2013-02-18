@@ -3,17 +3,22 @@ package ${packageName};
 import java.io.InputStream;
 import java.io.IOException;
 
-public class ${simpleClass}Mapper {
+public class ${simpleClass}Mapper
+    implements com.shaubert.protomapper.ProtoMappers.Mapper<${simpleClass}, ${protoClass}> {
 
+    @Override
+    public ${simpleClass} mapFromProto(InputStream stream) throws IOException {
 #if (!${isEnum})
-    public static ${simpleClass} map(InputStream stream) throws IOException {
         ${protoClass} protoClass =
                 ${protoClass}.parseFrom(stream);
-        return map(protoClass);
-    }
+        return mapFromProto(protoClass);
+#else
+        throw new UnsupportedOperationException("Can not parse enum class from InputStream, call ");
 #end
+    }
 
-    public static ${simpleClass} map(${protoClass} protoClass) {
+    @Override
+    public ${simpleClass} mapFromProto(${protoClass} protoClass) {
 #if (${isEnum})
         for (${simpleClass} result :
                 ${simpleClass}.values()) {
@@ -39,12 +44,12 @@ public class ${simpleClass}Mapper {
 #end
 #else
         for (${generic.getProtoClass()} el : protoClass.${field.getProtoClassGetter()}List()) {
-            ${field.getName()}.add(${generic.getName()}Mapper.map(el));
+            ${field.getName()}.add(new ${generic.getName()}Mapper().mapFromProto(el));
         }
 #end
         result.${field.getSetterName()}(${field.getName()});
 #elseif (${field.getType().isMappingRequired()})
-        result.${field.getSetterName()}(${field.getType().getName()}Mapper.map(protoClass.${field.getProtoClassGetter()}()));
+        result.${field.getSetterName()}(new ${field.getType().getName()}Mapper().mapFromProto(protoClass.${field.getProtoClassGetter()}()));
 #else
         result.${field.getSetterName()}(protoClass.${field.getProtoClassGetter()}()#if(${field.getType().isByteArray()}).toByteArray()#end);
 #end
@@ -53,7 +58,8 @@ public class ${simpleClass}Mapper {
 #end
     }
 
-    public static ${protoClass} map(${simpleClass} modelClass) {
+    @Override
+    public ${protoClass} mapToProto(${simpleClass} modelClass) {
 #if (${isEnum})
         for (${protoClass} result :
                 ${protoClass}.values()) {
@@ -77,11 +83,11 @@ public class ${simpleClass}Mapper {
             result.${field.getProtoClassSetter()}(com.google.protobuf.ByteString.copyFrom(el));
 #end
 #else
-            result.${field.getProtoClassSetter()}(${generic.getName()}Mapper.map(el));
+            result.${field.getProtoClassSetter()}(new ${generic.getName()}Mapper().mapToProto(el));
 #end
         }
 #elseif (${field.getType().isMappingRequired()})
-        result.${field.getProtoClassSetter()}(${field.getType().getName()}Mapper.map(modelClass.${field.getGetterName()}()));
+        result.${field.getProtoClassSetter()}(new ${field.getType().getName()}Mapper().mapToProto(modelClass.${field.getGetterName()}()));
 #else
 #if (!${field.getType().isByteArray()})
         result.${field.getProtoClassSetter()}(modelClass.${field.getGetterName()}());
@@ -92,6 +98,16 @@ public class ${simpleClass}Mapper {
 #end
         return result.build();
 #end
+    }
+
+    @Override
+    public Class<${simpleClass}> getDataClass() {
+        return ${simpleClass}.class;
+    }
+
+    @Override
+    public Class<${protoClass}> getProtoClass() {
+        return ${protoClass}.class;
     }
 
 }

@@ -1,0 +1,44 @@
+package com.shaubert.protomapper;
+
+import com.google.protobuf.GeneratedMessage;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProtoMappers {
+
+    public interface Mapper<DataClass, ProtoClass> {
+        DataClass mapFromProto(InputStream inputStream) throws IOException;
+
+        DataClass mapFromProto(ProtoClass protoClass);
+
+        ProtoClass mapToProto(DataClass dataClass);
+
+        Class<DataClass> getDataClass();
+
+        Class<ProtoClass> getProtoClass();
+    }
+
+    private List<Mapper<?, ?>> mappers = new ArrayList<Mapper<?, ?>>();
+
+    public ProtoMappers() {
+#foreach($mapper in $mappers)
+        mappers.add(new ${mapper}());
+#end
+    }
+
+    @SuppressWarnings("unchecked")
+    public <DataClass, ProtoClass extends GeneratedMessage> Mapper<DataClass, ProtoClass> getMapper(
+            Class<DataClass> dataClass, Class<ProtoClass> protoClass) {
+        for (Mapper<?, ?> mapper : mappers) {
+            if (mapper.getDataClass().equals(dataClass)
+                    && mapper.getProtoClass().equals(protoClass)) {
+                return (Mapper<DataClass, ProtoClass>) mapper;
+            }
+        }
+        return null;
+    }
+
+}
