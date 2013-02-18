@@ -30,7 +30,7 @@ public class MappingAnnotationsProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "searching for mappers");
         for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
-            MapperParams mapperParams = new MapperParams((TypeElement) elem, roundEnv);
+            ClassParams mapperParams = new ClassParams((TypeElement) elem, roundEnv);
             logMapper(mapperParams);
             Template template = createTemplate();
             if (template != null) {
@@ -40,7 +40,7 @@ public class MappingAnnotationsProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void createMapperClass(Template template, MapperParams mapperParams) {
+    private void createMapperClass(Template template, ClassParams mapperParams) {
         JavaFileObject jfo = null;
         Writer writer = null;
         try {
@@ -71,7 +71,7 @@ public class MappingAnnotationsProcessor extends AbstractProcessor {
         }
     }
 
-    private void logMapper(MapperParams params) {
+    private void logMapper(ClassParams params) {
         String message = "mapper found in " + params.getClassName()
                 + " with proto class " + params.getProtoClass()
                 + " and " + params.getFields().size() + " annotated fields";

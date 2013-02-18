@@ -24,20 +24,27 @@ public class ${simpleClass}Mapper {
 #else
         ${simpleClass} result = new ${simpleClass}();
 #foreach($field in $fields)
-#if (${field.isList()})
-        ${field.getType()} ${field.getName()} = new java.util.ArrayList<${field.getGenericClass()}>();
-#if (!${field.isGenericClassNeedsMapping()})
-        ${field.getName()}.addAll(protoClass.${field.getProtoClassGetter()}List);
+#if (${field.getType().isList()})
+#set($generic = ${field.getType().getGenerics().get(0)})
+        ${field.getType().getName()} ${field.getName()} = new java.util.ArrayList<${generic.getName()}>();
+#if (!${generic.isMappingRequired()})
+#if (!${generic.isByteArray()})
+        ${field.getName()}.addAll(protoClass.${field.getProtoClassGetter()}List());
 #else
-        for (${field.getProtoClassOfGeneric()} el : protoClass.${field.getProtoClassGetter()}List()) {
-            ${field.getName()}.add(${field.getGenericClass()}Mapper.map(el));
+        for (com.google.protobuf.ByteString el : protoClass.${field.getProtoClassGetter()}List()) {
+            ${field.getName()}.add(el.toByteArray());
         }
-        result.${field.getSetterName()}(${field.getName()});
 #end
-#elseif (${field.isMappingRequired()})
-        result.${field.getSetterName()}(${field.getType()}Mapper.map(protoClass.${field.getProtoClassGetter()}()));
 #else
-        result.${field.getSetterName()}(protoClass.${field.getProtoClassGetter()}()#if(${field.isByteArray()}).toByteArray()#end);
+        for (${generic.getProtoClass()} el : protoClass.${field.getProtoClassGetter()}List()) {
+            ${field.getName()}.add(${generic.getName()}Mapper.map(el));
+        }
+#end
+        result.${field.getSetterName()}(${field.getName()});
+#elseif (${field.getType().isMappingRequired()})
+        result.${field.getSetterName()}(${field.getType().getName()}Mapper.map(protoClass.${field.getProtoClassGetter()}()));
+#else
+        result.${field.getSetterName()}(protoClass.${field.getProtoClassGetter()}()#if(${field.getType().isByteArray()}).toByteArray()#end);
 #end
 #end
         return result;
