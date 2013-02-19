@@ -6,12 +6,12 @@ import com.shaubert.protomapper.sample.protobuf.Services;
 
 @Mapper(protoClass = Services.PrimitiveTypes.class)
 public class PrimitiveTypesTest {
-    private @Field String strVal;
+    private @Field(optional = true) String strVal;
     private @Field int intVal;
     private @Field long longVal;
     private @Field float floatVal;
     private @Field double doubleVal;
-    private @Field byte[] byteVal;
+    private @Field(optional = true) byte[] byteVal;
 
     public String getStrVal() {
         return strVal;

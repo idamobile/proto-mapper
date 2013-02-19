@@ -10,6 +10,8 @@ public class FieldParams {
     private String name;
     private String protoGetter;
     private String protoSetter;
+    private String protoHas;
+    private boolean optional;
 
     public FieldParams(VariableElement element, RoundEnvironment roundEnvironment) {
         type = new TypeParams(element.asType(), roundEnvironment);
@@ -21,9 +23,11 @@ public class FieldParams {
         } else {
             protoFieldName = field.name();
         }
+        optional = field.optional();
         protoGetter = makeProtoGetter(protoFieldName, type.getName());
         String setPrefix = type.isList() ? "add" : "set";
         protoSetter = formatGetSetName(setPrefix, protoFieldName);
+        protoHas = formatGetSetName("has", protoFieldName);
     }
 
     private String makeProtoGetter(String fieldName, String type) {
@@ -62,11 +66,19 @@ public class FieldParams {
         return name;
     }
 
+    public String getProtoClassHasMethodName(){
+        return protoHas;
+    }
+
     public String getProtoClassGetter(){
         return protoGetter;
     }
 
     public String getProtoClassSetter() {
         return protoSetter;
+    }
+
+    public boolean isOptional() {
+        return optional;
     }
 }

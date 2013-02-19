@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Field {
     String name() default "";
+    boolean optional() default false;
 }

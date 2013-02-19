@@ -48,10 +48,18 @@ public class ${simpleClass}Mapper
         }
 #end
         result.${field.getSetterName()}(${field.getName()});
-#elseif (${field.getType().isMappingRequired()})
-        result.${field.getSetterName()}(new ${field.getType().getName()}Mapper().mapFromProto(protoClass.${field.getProtoClassGetter()}()));
 #else
-        result.${field.getSetterName()}(protoClass.${field.getProtoClassGetter()}()#if(${field.getType().isByteArray()}).toByteArray()#end);
+#if (${field.isOptional()})
+        if (protoClass.${field.getProtoClassHasMethodName()}()) {
+#end
+#if (${field.getType().isMappingRequired()})
+#if(${field.isOptional()})    #end        result.${field.getSetterName()}(new ${field.getType().getName()}Mapper().mapFromProto(protoClass.${field.getProtoClassGetter()}()));
+#else
+#if(${field.isOptional()})    #end        result.${field.getSetterName()}(protoClass.${field.getProtoClassGetter()}()#if(${field.getType().isByteArray()}).toByteArray()#end);
+#end
+#if (${field.isOptional()})
+        }
+#end
 #end
 #end
         return result;
