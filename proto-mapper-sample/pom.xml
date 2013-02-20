@@ -26,7 +26,14 @@
             <groupId>com.github.shaubert</groupId>
             <artifactId>proto-mapper-processor</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
        </dependency>
+
+        <dependency>
+            <groupId>com.github.shaubert</groupId>
+            <artifactId>proto-mapper-annotations</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
