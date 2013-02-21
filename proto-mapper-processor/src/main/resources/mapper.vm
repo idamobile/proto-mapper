@@ -94,14 +94,22 @@ public class ${simpleClass}Mapper
             result.${field.getProtoClassSetter()}(new ${generic.getName()}Mapper().mapToProto(el));
 #end
         }
-#elseif (${field.getType().isMappingRequired()})
-        result.${field.getProtoClassSetter()}(new ${field.getType().getName()}Mapper().mapToProto(modelClass.${field.getGetterName()}()));
+#else
+#if (${field.isOptional()})
+        if (modelClass.${field.getGetterName()}() != null) {
+#end
+#if (${field.getType().isMappingRequired()})
+#if(${field.isOptional()})    #end        result.${field.getProtoClassSetter()}(new ${field.getType().getName()}Mapper().mapToProto(modelClass.${field.getGetterName()}()));
 #else
 #if (!${field.getType().isByteArray()})
-        result.${field.getProtoClassSetter()}(modelClass.${field.getGetterName()}());
+#if(${field.isOptional()})    #end        result.${field.getProtoClassSetter()}(modelClass.${field.getGetterName()}());
 #else
-        result.${field.getProtoClassSetter()}(com.google.protobuf.ByteString.copyFrom(modelClass.${field.getGetterName()}()));
+#if(${field.isOptional()})    #end        result.${field.getProtoClassSetter()}(com.google.protobuf.ByteString.copyFrom(modelClass.${field.getGetterName()}()));
 #end
+#end
+#end
+#if (${field.isOptional()})
+        }
 #end
 #end
         return result.build();
