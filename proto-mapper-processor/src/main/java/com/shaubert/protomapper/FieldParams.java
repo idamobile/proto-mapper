@@ -31,7 +31,7 @@ public class FieldParams {
     }
 
     private String makeProtoGetter(String fieldName, String type) {
-        String res = makeGetter(fieldName, type);
+        String res = formatGetSetName("get", fieldName);
         if (type.equals("java.util.List")) {
             res += "List";
         }

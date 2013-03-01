@@ -8,6 +8,7 @@ import com.shaubert.protomapper.sample.protobuf.Services;
 public class PrimitiveTypesTest {
     private @Field(optional = true) String strVal;
     private @Field int intVal;
+    private @Field boolean boolVal;
     private @Field long longVal;
     private @Field float floatVal;
     private @Field double doubleVal;
@@ -59,5 +60,13 @@ public class PrimitiveTypesTest {
 
     public void setByteVal(byte[] byteVal) {
         this.byteVal = byteVal;
+    }
+
+    public boolean isBoolVal() {
+        return boolVal;
+    }
+
+    public void setBoolVal(boolean boolVal) {
+        this.boolVal = boolVal;
     }
 }

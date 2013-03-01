@@ -14,6 +14,7 @@ public class PrimitiveTypeListsTest {
     private @Field List<Float> floatEntries;
     private @Field List<Double> doubleEntries;
     private @Field List<byte[]> byteEntries;
+    private @Field List<Boolean> boolEntries;
 
     public List<String> getStrEntries() {
         return strEntries;
@@ -61,5 +62,13 @@ public class PrimitiveTypeListsTest {
 
     public void setByteEntries(List<byte[]> byteEntries) {
         this.byteEntries = byteEntries;
+    }
+
+    public List<Boolean> getBoolEntries() {
+        return boolEntries;
+    }
+
+    public void setBoolEntries(List<Boolean> boolEntries) {
+        this.boolEntries = boolEntries;
     }
 }

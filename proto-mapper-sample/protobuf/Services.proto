@@ -39,6 +39,7 @@ message PrimitiveTypes {
     required float floatVal = 4;
     required double doubleVal = 5;
     required bytes byteVal = 6;
+    required bool boolVal = 7;
 }
 
 message PrimitiveTypesLists {
@@ -48,4 +49,5 @@ message PrimitiveTypesLists {
     repeated float floatEntries = 4;
     repeated double doubleEntries = 5;
     repeated bytes byteEntries = 6;
+    repeated bool boolEntries = 7;
 }
