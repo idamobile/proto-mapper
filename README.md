@@ -1,13 +1,14 @@
 Java Proto Mapper
 =================
 
-Ligthweight generation of protobuf <-> bean mapper classes. Based on annotation processing. It depends directly on the generated Java code from the [https://code.google.com/p/protobuf/downloads/list] (google protoc compiler). Tested on version 2.4.1.
+Ligthweight generation of protobuf <-> bean mapper classes. Based on annotation processing. It depends directly on the generated Java code from the [google protoc compiler] (https://code.google.com/p/protobuf/downloads/list). Tested on version 2.4.1.
 
 Usage Example
 ------------
 To get generated mapper of java bean <-> protobuf message/enum you have to annotate your java bean class with `@Mapper(protoClass = CorrespondingProtobuf.class)` annonation. Also you have to annonate required for mapping fields with `@Field` annotation. Optionally you could provide `name` value if a field name declared in a java bean differs from such in the protocol definition. Also add `optional` value if a field is optional in the protocol.
 
-For example, suppose we generate with protoc Services.java from following protobuf protocol:
+For example, suppose we generated `Services.java` with protoc from the following protobuf protocol:
+
         enum Result {
             OK = 1;
             WRONG_CREDENTIALS = 2;
