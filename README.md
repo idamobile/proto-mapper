@@ -182,8 +182,11 @@ And `MapMapper.java`:
            public Map mapFromProto(Services.Map protoClass) {
                Map result = new Map();
                List<Entry> entries = new ArrayList<Entry>();
-               for (Services.Entry el : protoClass.getEntriesList()) {
-                   entries.add(new EntryMapper().mapFromProto(el));
+               {
+                   EntryMapper mapper = new EntryMapper();
+                   for (Services.Entry el : protoClass.getEntriesList()) {
+                       entries.add(mapper.mapFromProto(el));
+                   }
                }
                result.setEntries(entries);
                return result;
@@ -193,8 +196,11 @@ And `MapMapper.java`:
            public Services.Map mapToProto(Map modelClass) {
                Services.Map.Builder result =
                        Services.Map.newBuilder();
-               for (Entry el : modelClass.getEntries()) {
-                   result.addEntries(new EntryMapper().mapToProto(el));
+               {
+                   EntryMapper mapper = new EntryMapper();
+                   for (Entry el : modelClass.getEntries()) {
+                       result.addEntries(mapper.mapToProto(el));
+                   }
                }
                return result.build();
            }

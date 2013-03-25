@@ -13,7 +13,8 @@ public class ${simpleClass}Mapper
                 ${protoClass}.parseFrom(stream);
         return mapFromProto(protoClass);
 #else
-        throw new UnsupportedOperationException("Can not parse enum class from InputStream, call ");
+        throw new UnsupportedOperationException("Can not parse enum class from InputStream, "
+                + "call mapFromProto(protoClass) instead");
 #end
     }
 
@@ -43,8 +44,11 @@ public class ${simpleClass}Mapper
         }
 #end
 #else
-        for (${generic.getProtoClass()} el : protoClass.${field.getProtoClassGetter()}List()) {
-            ${field.getName()}.add(new ${generic.getName()}Mapper().mapFromProto(el));
+        {
+            ${generic.getName()}Mapper mapper = new ${generic.getName()}Mapper();
+            for (${generic.getProtoClass()} el : protoClass.${field.getProtoClassGetter()}List()) {
+                ${field.getName()}.add(mapper.mapFromProto(el));
+            }
         }
 #end
         result.${field.getSetterName()}(${field.getName()});
@@ -83,17 +87,22 @@ public class ${simpleClass}Mapper
 #foreach($field in $fields)
 #if (${field.getType().isList()})
 #set($generic = ${field.getType().getGenerics().get(0)})
+#if (${generic.isMappingRequired()})
+        {
+            ${generic.getName()}Mapper mapper = new ${generic.getName()}Mapper();
+            for (${generic.getName()} el : modelClass.${field.getGetterName()}()) {
+                result.${field.getProtoClassSetter()}(mapper.mapToProto(el));
+            }
+        }
+#else
         for (${generic.getName()} el : modelClass.${field.getGetterName()}()) {
-#if (!${generic.isMappingRequired()})
 #if (!${generic.isByteArray()})
             result.${field.getProtoClassSetter()}(el);
 #else
             result.${field.getProtoClassSetter()}(com.google.protobuf.ByteString.copyFrom(el));
 #end
-#else
-            result.${field.getProtoClassSetter()}(new ${generic.getName()}Mapper().mapToProto(el));
-#end
         }
+#end
 #else
 #if (${field.isOptional()})
         if (modelClass.${field.getGetterName()}() != null) {
