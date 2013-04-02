@@ -1,5 +1,7 @@
 package com.shaubert.protomapper;
 
+import com.google.protobuf.AbstractMessageLite;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,7 +21,16 @@ public class ProtoMappers {
         Class<ProtoClass> getProtoClass();
     }
 
-    private List<Mapper<?, ?>> mappers = new ArrayList<Mapper<?, ?>>();
+    protected List<Mapper<?, ?>> mappers = new ArrayList<Mapper<?, ?>>();
+
+    private static ProtoMappers instance;
+
+    public static ProtoMappers getInstance() {
+        if (instance == null) {
+            instance = new ProtoMappers();
+        }
+        return instance;
+    }
 
     public ProtoMappers() {
 #foreach($mapper in $mappers)
@@ -39,4 +50,61 @@ public class ProtoMappers {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public <DataClass, ProtoClass> Mapper<DataClass, ProtoClass> getFirstFromData(Class<DataClass> dataClass) {
+        for (Mapper<?, ?> mapper : mappers) {
+            if (mapper.getDataClass().equals(dataClass)) {
+                return (Mapper<DataClass, ProtoClass>) mapper;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <DataClass, ProtoClass> Mapper<DataClass, ProtoClass> getFirstFromProto(Class<ProtoClass> protoClass) {
+        for (Mapper<?, ?> mapper : mappers) {
+            if (mapper.getProtoClass().equals(protoClass)) {
+                return (Mapper<DataClass, ProtoClass>) mapper;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static AbstractMessageLite mapToMessage(Object data) {
+        ProtoMappers mappers = getInstance();
+        Mapper mapper = mappers.getFirstFromData(data.getClass());
+        throwIfMapperNotFound(mapper, data.getClass());
+        return (AbstractMessageLite) mapper.mapToProto(data);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T mapFromProto(Object proto) {
+        ProtoMappers mappers = getInstance();
+        Mapper mapper = mappers.getFirstFromProto(proto.getClass());
+        throwIfMapperNotFound(mapper, proto.getClass());
+        return (T) mapper.mapFromProto(proto);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T mapFromProtoByProtoClass(InputStream inputStream, Class<?> protoClass) throws IOException {
+        ProtoMappers mappers = getInstance();
+        Mapper mapper = mappers.getFirstFromProto(protoClass);
+        throwIfMapperNotFound(mapper, protoClass);
+        return (T) mapper.mapFromProto(inputStream);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T mapFromProtoByDataClass(InputStream inputStream, Class<?> dataClass) throws IOException {
+        ProtoMappers mappers = getInstance();
+        Mapper mapper = mappers.getFirstFromData(dataClass);
+        throwIfMapperNotFound(mapper, dataClass);
+        return (T) mapper.mapFromProto(inputStream);
+    }
+
+    private static void throwIfMapperNotFound(Object mapper, Class<?> forClass) {
+        if (mapper == null) {
+            throw new NullPointerException("mapper for " + forClass + " not found");
+        }
+    }
 }
