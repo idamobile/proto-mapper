@@ -8,7 +8,7 @@
     <groupId>com.github.shaubert</groupId>
     <artifactId>proto-mapper</artifactId>
     <version>1.0-SNAPSHOT</version>
-    
+
     <packaging>pom</packaging>
 
     <modules>
@@ -16,7 +16,14 @@
         <module>proto-mapper-processor</module>
         <module>proto-mapper-sample</module>
     </modules>
-    
+
+    <scm>
+        <url>https://github.com/idamobile/proto-mapper</url>
+        <connection>scm:git:git://github.com/idamobile/proto-mapper.git</connection>
+        <developerConnection>scm:git:git@github.com:idamobile/proto-mapper.git</developerConnection>
+        <!--<tag>HEAD</tag>-->
+    </scm>
+
     <repositories>
         <repository>
             <id>ida-repo-public</id>
@@ -36,5 +43,17 @@
             <url>http://nexus.idamob.ru/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-        
-</project>    
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
