@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>Proto Mapper</name>
 
   <groupId>com.github.shaubert</groupId>
   <artifactId>proto-mapper</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -21,6 +19,7 @@
     <url>https://github.com/idamobile/proto-mapper</url>
     <connection>scm:git:git://github.com/idamobile/proto-mapper.git</connection>
     <developerConnection>scm:git:git@github.com:idamobile/proto-mapper.git</developerConnection>
+    <tag>1.0</tag>
   </scm>
 
   <repositories>
