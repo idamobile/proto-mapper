@@ -33,7 +33,7 @@ public class MappingAnnotationsProcessor extends AbstractProcessor {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "searching for mappers");
             List<ClassParams> paramsList = new ArrayList<ClassParams>();
             for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
-                ClassParams mapperParams = new ClassParams((TypeElement) elem, roundEnv);
+                ClassParams mapperParams = new ClassParams((TypeElement) elem, roundEnv, processingEnv);
                 logMapper(mapperParams);
                 paramsList.add(mapperParams);
                 Template template = createMapperTemplate();
