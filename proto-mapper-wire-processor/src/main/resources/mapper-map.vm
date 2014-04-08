@@ -1,0 +1,117 @@
+package com.shaubert.protomapper.wire;
+
+import com.squareup.wire.Message;
+import com.squareup.wire.Wire;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProtoMappers {
+
+    public interface Mapper<DataClass, ProtoClass> {
+        DataClass mapFromProto(InputStream inputStream) throws IOException;
+
+        DataClass mapFromProto(ProtoClass protoClass);
+
+        ProtoClass mapToProto(DataClass dataClass);
+
+        Class<DataClass> getDataClass();
+
+        Class<ProtoClass> getProtoClass();
+    }
+
+    protected List<Mapper<?, ?>> mappers = new ArrayList<Mapper<?, ?>>();
+    private Wire wire;
+
+    private static ProtoMappers instance;
+
+    public static synchronized ProtoMappers get() {
+        if (instance == null) {
+            instance = new ProtoMappers();
+        }
+        return instance;
+    }
+
+    public ProtoMappers() {
+        wire = new Wire();
+#foreach($mapper in $mappers)
+        mappers.add(new ${mapper}());
+#end
+    }
+
+    public Wire getWire() {
+        return wire;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <DataClass, ProtoClass> Mapper<DataClass, ProtoClass> getMapper(
+            Class<DataClass> dataClass, Class<ProtoClass> protoClass) {
+        for (Mapper<?, ?> mapper : mappers) {
+            if (mapper.getDataClass().equals(dataClass)
+                    && mapper.getProtoClass().equals(protoClass)) {
+                return (Mapper<DataClass, ProtoClass>) mapper;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <DataClass, ProtoClass> Mapper<DataClass, ProtoClass> getFirstFromData(Class<DataClass> dataClass) {
+        for (Mapper<?, ?> mapper : mappers) {
+            if (mapper.getDataClass().equals(dataClass)) {
+                return (Mapper<DataClass, ProtoClass>) mapper;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <DataClass, ProtoClass> Mapper<DataClass, ProtoClass> getFirstFromProto(Class<ProtoClass> protoClass) {
+        for (Mapper<?, ?> mapper : mappers) {
+            if (mapper.getProtoClass().equals(protoClass)) {
+                return (Mapper<DataClass, ProtoClass>) mapper;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Message mapToMessage(Object data) {
+        ProtoMappers mappers = get();
+        Mapper mapper = mappers.getFirstFromData(data.getClass());
+        throwIfMapperNotFound(mapper, data.getClass());
+        return (Message) mapper.mapToProto(data);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T mapFromProto(Object proto) {
+        ProtoMappers mappers = get();
+        Mapper mapper = mappers.getFirstFromProto(proto.getClass());
+        throwIfMapperNotFound(mapper, proto.getClass());
+        return (T) mapper.mapFromProto(proto);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T mapFromProtoByProtoClass(InputStream inputStream, Class<?> protoClass) throws IOException {
+        ProtoMappers mappers = get();
+        Mapper mapper = mappers.getFirstFromProto(protoClass);
+        throwIfMapperNotFound(mapper, protoClass);
+        return (T) mapper.mapFromProto(inputStream);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T mapFromProtoByDataClass(InputStream inputStream, Class<?> dataClass) throws IOException {
+        ProtoMappers mappers = get();
+        Mapper mapper = mappers.getFirstFromData(dataClass);
+        throwIfMapperNotFound(mapper, dataClass);
+        return (T) mapper.mapFromProto(inputStream);
+    }
+
+    private static void throwIfMapperNotFound(Object mapper, Class<?> forClass) {
+        if (mapper == null) {
+            throw new NullPointerException("mapper for " + forClass + " not found");
+        }
+    }
+}

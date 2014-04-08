@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>Proto Mapper Wire Processor Sample</name>
+
+    <artifactId>proto-mapper-wire-processor-sample</artifactId>
+    <version>1.2-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>com.github.shaubert</groupId>
+        <artifactId>proto-mapper</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.shaubert</groupId>
+            <artifactId>proto-mapper-wire-processor</artifactId>
+            <version>1.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.shaubert</groupId>
+            <artifactId>proto-mapper-annotations</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.wire</groupId>
+            <artifactId>wire-runtime</artifactId>
+            <version>1.3.3</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.squareup.wire</groupId>
+                    <artifactId>wire-maven-plugin</artifactId>
+                    <version>1.3.3</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate-sources</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.squareup.wire</groupId>
+                <artifactId>wire-maven-plugin</artifactId>
+                <configuration>
+                    <protoSourceDirectory>${project.basedir}/protobuf</protoSourceDirectory>
+                    <protoFiles>
+                        <protoFile>Services.proto</protoFile>
+                    </protoFiles>
+                    <generatedSourceDirectory>${project.build.directory}/generated-sources/protobuf
+                    </generatedSourceDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

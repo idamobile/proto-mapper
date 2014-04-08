@@ -1,80 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <name>Proto Mapper</name>
+    <name>Proto Mapper</name>
 
-  <groupId>com.github.shaubert</groupId>
-  <artifactId>proto-mapper</artifactId>
-  <version>1.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>com.github.shaubert</groupId>
+    <artifactId>proto-mapper</artifactId>
+    <version>1.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <modules>
-    <module>proto-mapper-annotations</module>
-    <module>proto-mapper-processor</module>
-    <module>proto-mapper-sample</module>
-  </modules>
+    <modules>
+        <module>proto-mapper-annotations</module>
+        <module>proto-mapper-base-processor</module>
+        <module>proto-mapper-protoc-processor</module>
+        <module>proto-mapper-protoc-processor-sample</module>
+        <module>proto-mapper-wire-processor</module>
+        <module>proto-mapper-wire-processor-sample</module>
+    </modules>
 
-  <scm>
-    <url>https://github.com/idamobile/proto-mapper</url>
-    <connection>scm:git:git://github.com/idamobile/proto-mapper.git</connection>
-    <developerConnection>scm:git:git@github.com:idamobile/proto-mapper.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
+    <scm>
+        <url>https://github.com/idamobile/proto-mapper</url>
+        <connection>scm:git:git://github.com/idamobile/proto-mapper.git</connection>
+        <developerConnection>scm:git:git@github.com:idamobile/proto-mapper.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
-  <repositories>
-    <repository>
-      <id>ida-repo-public</id>
-      <url>http://nexus.idamob.ru/content/groups/public/</url>
-    </repository>
-  </repositories>
+    <repositories>
+        <repository>
+            <id>ida-repo-public</id>
+            <url>http://nexus.idamob.ru/content/groups/public/</url>
+        </repository>
+    </repositories>
 
-  <distributionManagement>
-    <repository>
-      <id>ida-repo-releases</id>
-      <name>iDa Mobile Repo - Releases</name>
-      <url>http://nexus.idamob.ru/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>ida-repo-snapshots</id>
-      <name>iDa Mobile Repo - Snapshots</name>
-      <url>http://nexus.idamob.ru/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>ida-repo-releases</id>
+            <name>iDa Mobile Repo - Releases</name>
+            <url>http://nexus.idamob.ru/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>ida-repo-snapshots</id>
+            <name>iDa Mobile Repo - Snapshots</name>
+            <url>http://nexus.idamob.ru/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>com.github.igor-petruk.protobuf</groupId>
-          <artifactId>protobuf-maven-plugin</artifactId>
-          <version>0.6.2</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.5</version>
-          <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.3.2</version>
-          <configuration>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.5</version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

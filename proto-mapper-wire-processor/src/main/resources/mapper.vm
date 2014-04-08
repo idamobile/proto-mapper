@@ -1,0 +1,148 @@
+package ${packageName};
+
+import com.shaubert.protomapper.wire.ProtoMappers;
+import com.squareup.wire.Wire;
+
+import java.io.InputStream;
+import java.io.IOException;
+
+public class ${simpleClass}Mapper
+    implements ProtoMappers.Mapper<${simpleClass}, ${protoClass}> {
+
+    @Override
+    public ${simpleClass} mapFromProto(InputStream stream) throws IOException {
+#if (!${isEnum})
+        Wire wire = ProtoMappers.get().getWire();
+        ${protoClass} protoClass =
+                wire.parseFrom(stream, ${protoClass}.class);
+        return mapFromProto(protoClass);
+#else
+        throw new UnsupportedOperationException("Can not parse enum class from InputStream, "
+                + "call mapFromProto(protoClass) instead");
+#end
+    }
+
+    @Override
+    public ${simpleClass} mapFromProto(${protoClass} protoClass) {
+#if (${isEnum})
+        for (${simpleClass} result :
+                ${simpleClass}.values()) {
+            if (result.${enumNumberField} == protoClass.getValue()) {
+                return result;
+            }
+        }
+        throw new IllegalArgumentException("Unable to parse ${simpleClass} from: "
+                + protoClass);
+#else
+        ${simpleClass} result = new ${simpleClass}();
+#foreach($field in $fields)
+#if (${field.getType().isList()})
+#set($generic = ${field.getType().getGenerics().get(0)})
+        ${field.getType().getName()} ${field.getName()} = new java.util.ArrayList<${generic.getName()}>();
+#if (!${generic.isMappingRequired()})
+#if (!${generic.isByteArray()})
+        ${field.getName()}.addAll(protoClass.${field.getProtoFieldName()});
+#else
+        for (com.squareup.wire.ByteString el : protoClass.${field.getProtoFieldName()}) {
+            ${field.getName()}.add(el.toByteArray());
+        }
+#end
+#else
+        {
+            ${generic.getName()}Mapper mapper = new ${generic.getName()}Mapper();
+            for (${generic.getProtoClass()} el : protoClass.${field.getProtoFieldName()}) {
+                ${field.getName()}.add(mapper.mapFromProto(el));
+            }
+        }
+#end
+        result.${field.getSetterName()}(${field.getName()});
+#else
+#if (${field.isOptional()})
+        if (protoClass.${field.getProtoFieldName()} != null) {
+#end
+#if (${field.getType().isMappingRequired()})
+#if(${field.isOptional()})    #end        result.${field.getSetterName()}(new ${field.getType().getName()}Mapper().mapFromProto(protoClass.${field.getProtoFieldName()}));
+#else
+#if(${field.isOptional()})    #end        result.${field.getSetterName()}(protoClass.${field.getProtoFieldName()}#if(${field.getType().isByteArray()}).toByteArray()#end);
+#end
+#if (${field.isOptional()})
+        }
+#end
+#end
+#end
+        return result;
+#end
+    }
+
+    @Override
+    public ${protoClass} mapToProto(${simpleClass} modelClass) {
+#if (${isEnum})
+        for (${protoClass} result :
+                ${protoClass}.values()) {
+            if (result.getValue() == modelClass.${enumNumberField}) {
+                return result;
+            }
+        }
+        throw new IllegalArgumentException("Unable to convert " + modelClass
+                + " to " + ${protoClass}.class);
+#else
+        ${protoClass}.Builder result =
+                new ${protoClass}.Builder();
+#foreach($field in $fields)
+#if (${field.getType().isList()})
+#set($generic = ${field.getType().getGenerics().get(0)})
+#if (${generic.isMappingRequired()})
+        {
+            java.util.List<${generic.getProtoClass()}> ${field.getName()} =
+                    new java.util.ArrayList<${generic.getProtoClass()}>(modelClass.${field.getGetterName()}().size());
+            ${generic.getName()}Mapper mapper = new ${generic.getName()}Mapper();
+            for (${generic.getName()} el : modelClass.${field.getGetterName()}()) {
+                ${field.getName()}.add(mapper.mapToProto(el));
+            }
+            result.${field.getProtoFieldName()}(${field.getName()});
+        }
+#else
+#if (!${generic.isByteArray()})
+        result.${field.getProtoFieldName()}(modelClass.${field.getGetterName()}());
+#else
+        java.util.List<com.squareup.wire.ByteString> ${field.getName()} =
+                new java.util.ArrayList<com.squareup.wire.ByteString>(modelClass.${field.getGetterName()}().size());
+        for (${generic.getName()} el : modelClass.${field.getGetterName()}()) {
+            ${field.getName()}.add(com.squareup.wire.ByteString.of(el));
+        }
+        result.${field.getProtoFieldName()}(${field.getName()});
+#end
+#end
+#else
+#if (${field.isOptional()})
+        if (modelClass.${field.getGetterName()}() != null) {
+#end
+#if (${field.getType().isMappingRequired()})
+#if(${field.isOptional()})    #end        result.${field.getProtoFieldName()}(new ${field.getType().getName()}Mapper().mapToProto(modelClass.${field.getGetterName()}()));
+#else
+#if (!${field.getType().isByteArray()})
+#if(${field.isOptional()})    #end        result.${field.getProtoFieldName()}(modelClass.${field.getGetterName()}());
+#else
+#if(${field.isOptional()})    #end        result.${field.getProtoFieldName()}(com.squareup.wire.ByteString.of(modelClass.${field.getGetterName()}()));
+#end
+#end
+#end
+#if (${field.isOptional()})
+        }
+#end
+#end
+        return result.build();
+#end
+    }
+
+    @Override
+    public Class<${simpleClass}> getDataClass() {
+        return ${simpleClass}.class;
+    }
+
+    @Override
+    public Class<${protoClass}> getProtoClass() {
+        return ${protoClass}.class;
+    }
+
+}
