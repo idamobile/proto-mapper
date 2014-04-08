@@ -1,4 +1,4 @@
-package com.shaubert.protomapper;
+package com.shaubert.protomapper.wire.sample;
 
 import com.shaubert.protomapper.annotations.Field;
 

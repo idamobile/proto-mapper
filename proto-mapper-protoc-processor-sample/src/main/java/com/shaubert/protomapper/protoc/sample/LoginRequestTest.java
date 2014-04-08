@@ -1,4 +1,4 @@
-package com.shaubert.protomapper;
+package com.shaubert.protomapper.protoc.sample;
 
 import com.shaubert.protomapper.annotations.Field;
 import com.shaubert.protomapper.annotations.Mapper;
