@@ -4,10 +4,13 @@ import com.shaubert.protomapper.annotations.Field;
 import com.shaubert.protomapper.annotations.Mapper;
 import org.apache.velocity.VelocityContext;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.*;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +31,10 @@ public class ClassParams {
 
     private List<FieldParams> fields = new ArrayList<FieldParams>();
 
-    public ClassParams(TypeElement classElement, RoundEnvironment environment) {
+    public ClassParams(TypeElement classElement, RoundEnvironment roundEnv, ProcessingEnvironment processingEnv) {
         protoClass = getProtoClass(classElement);
         setupClassParameters(classElement);
-        setupFields(classElement, environment);
+        setupFields(classElement, roundEnv, processingEnv);
     }
 
     protected static TypeMirror getProtoClass(TypeElement classElement) {
@@ -44,12 +47,19 @@ public class ClassParams {
         return null;
     }
 
-    private void setupFields(TypeElement classElement, RoundEnvironment roundEnvironment) {
-        for (Element e : classElement.getEnclosedElements()) {
-            if (e.getAnnotation(Field.class) != null) {
-                fields.add(new FieldParams((VariableElement) e, roundEnvironment));
+    private void setupFields(TypeElement classElement, RoundEnvironment roundEnv, ProcessingEnvironment processingEnv) {
+        do {
+            final List<VariableElement> fieldsInClass = ElementFilter.fieldsIn(classElement.getEnclosedElements());
+
+            for (VariableElement e : fieldsInClass) {
+                if (e.getAnnotation(Field.class) != null) {
+                    fields.add(new FieldParams(e, roundEnv));
+                }
             }
-        }
+
+            classElement = (TypeElement) processingEnv.getTypeUtils().asElement(classElement.getSuperclass());
+
+        } while (classElement != null);
     }
 
     private void setupClassParameters(TypeElement classElement) {
