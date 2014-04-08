@@ -1,9 +1,11 @@
 Java Proto Mapper
 =================
 
+
 Ligthweight generation of protobuf <-> bean mapper classes. Based on annotation processing. It depends directly on the generated Java code from:
-# [google protoc compiler] (https://code.google.com/p/protobuf/downloads/list) (tested on versions 2.4.1 and 2.5.0)
-# [square wire compiler] (https://github.com/square/wire) (tested on version 1.3.3)
+
+* google [protoc compiler] (https://code.google.com/p/protobuf/downloads/list) (tested on versions 2.4.1 and 2.5.0)
+* square [wire compiler] (https://github.com/square/wire) (tested on version 1.3.3)
 
 Usage Example
 ------------
