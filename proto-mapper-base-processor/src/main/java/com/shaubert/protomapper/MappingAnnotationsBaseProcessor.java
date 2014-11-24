@@ -10,7 +10,6 @@ import javax.annotation.processing.FilerException;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -27,7 +26,7 @@ public abstract class MappingAnnotationsBaseProcessor extends AbstractProcessor 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (!roundEnv.processingOver()) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "searching for mappers");
+            System.out.println("searching for mappers");
             List<ClassParams> paramsList = new ArrayList<ClassParams>();
             for (Element elem : roundEnv.getElementsAnnotatedWith(Mapper.class)) {
                 ClassParams mapperParams = new ClassParams((TypeElement) elem, roundEnv, processingEnv);
@@ -51,20 +50,15 @@ public abstract class MappingAnnotationsBaseProcessor extends AbstractProcessor 
     }
 
     private void createProtoMappersClass(Template template, List<ClassParams> mappers) {
-        JavaFileObject jfo = null;
         Writer writer = null;
         try {
-            jfo = processingEnv.getFiler().createSourceFile(getProtoMappersClassName());
+            JavaFileObject jfo = processingEnv.getFiler().createSourceFile(getProtoMappersClassName());
 
-            processingEnv.getMessager().printMessage(
-                    Diagnostic.Kind.NOTE,
-                    "creating source file: " + jfo.toUri());
+            System.out.println("creating source file: " + jfo.toUri());
 
             writer = jfo.openWriter();
 
-            processingEnv.getMessager().printMessage(
-                    Diagnostic.Kind.NOTE,
-                    "applying velocity template: " + template.getName());
+            System.out.println("applying velocity template: " + template.getName());
 
             List<String> classNames = new ArrayList<String>(mappers.size());
             for (ClassParams mapper : mappers) {
@@ -85,7 +79,7 @@ public abstract class MappingAnnotationsBaseProcessor extends AbstractProcessor 
             if (writer != null) {
                 try {
                     writer.close();
-                } catch (IOException e1) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -100,15 +94,11 @@ public abstract class MappingAnnotationsBaseProcessor extends AbstractProcessor 
             jfo = processingEnv.getFiler().createSourceFile(
                     getMapperClassName(mapperParams));
 
-            processingEnv.getMessager().printMessage(
-                    Diagnostic.Kind.NOTE,
-                    "creating source file: " + jfo.toUri());
+            System.out.println("creating source file: " + jfo.toUri());
 
             writer = jfo.openWriter();
 
-            processingEnv.getMessager().printMessage(
-                    Diagnostic.Kind.NOTE,
-                    "applying velocity template: " + template.getName());
+            System.out.println("applying velocity template: " + template.getName());
 
             template.merge(mapperParams.createContext(), writer);
 
@@ -118,7 +108,7 @@ public abstract class MappingAnnotationsBaseProcessor extends AbstractProcessor 
             if (writer != null) {
                 try {
                     writer.close();
-                } catch (IOException e1) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -132,7 +122,7 @@ public abstract class MappingAnnotationsBaseProcessor extends AbstractProcessor 
         String message = "mapper found in " + params.getClassName()
                 + " with proto class " + params.getProtoClass()
                 + " and " + params.getFields().size() + " annotated fields";
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
+        System.out.println(message);
     }
 
     protected abstract Template createProtoMappersTemplate();
